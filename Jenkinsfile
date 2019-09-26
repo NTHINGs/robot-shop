@@ -1,5 +1,5 @@
 def services = [
-    'mongodb',
+    'mongo',
     'catalogue',
     'user',
     'cart',
@@ -14,8 +14,10 @@ def services = [
 @NonCPS // has to be NonCPS or the build breaks on the call to .each
 def build(services) {
     services.each { service ->
-        def serviceImg = docker.build '${service}:latest'
-        serviceImg.push 'latest'
+        dir(service) {
+            def serviceImg = docker.build '${service}:latest'
+            serviceImg.push 'latest'
+        }
     }
 }
 pipeline {
