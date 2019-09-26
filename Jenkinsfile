@@ -1,17 +1,17 @@
+def DOCKERHUB_REPO = 'nthingsm'
+def services = [
+    'mongodb',
+    'catalogue',
+    'user',
+    'cart',
+    'mysql',
+    'shipping',
+    'ratings',
+    'payment',
+    'dispatch',
+    'web'
+]
 pipeline {
-    def REPO = 'nthingsm'
-    def services = [
-        'mongodb',
-        'catalogue',
-        'user',
-        'cart',
-        'mysql',
-        'shipping',
-        'ratings',
-        'payment',
-        'dispatch',
-        'web'
-    ]
     agent any
     environment {
         TOKEN = credentials('gh-token')
@@ -21,16 +21,16 @@ pipeline {
          pollSCM('* * * * *')
     }
     stages {
-        services.each { service ->
-            stage('Build ${service}'){ 
+        for (int i = 0; i < services.size(); i++) {
+            stage('Build ${services[i]}'){ 
                 when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
                 steps {
                     sh '''
                         docker login -u ${DOCKERHUB_USR} -p ${DOCKERHUB_PSW}
-                        docker build --no-cache -t ${service} .
-                        docker tag ${service}:latest ${REPO}/${service}:latest
-                        docker push ${REPO}/${service}:latest
-                        docker rmi ${service}:latest
+                        docker build --no-cache -t ${services[i]} .
+                        docker tag ${services[i]}:latest ${DOCKERHUB_REPO}/${services[i]}:latest
+                        docker push ${DOCKERHUB_REPO}/${services[i]}:latest
+                        docker rmi ${services[i]}:latest
                     '''    
                 }
             }
