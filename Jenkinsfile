@@ -1,4 +1,3 @@
-def DOCKERHUB_REPO = 'nthingsm'
 def services = [
     'mongodb',
     'catalogue',
@@ -15,19 +14,14 @@ def services = [
 @NonCPS // has to be NonCPS or the build breaks on the call to .each
 def build(services) {
     services.each { service ->
-        sh '''
-            docker build --no-cache -t ${service} .
-            docker tag ${service}:latest ${DOCKERHUB_REPO}/${service}:latest
-            docker push ${DOCKERHUB_REPO}/${service}:latest
-            docker rmi ${service}:latest
-        '''   
+        def serviceImg = docker.build '${service}:latest'
+        serviceImg.push 'latest'
     }
 }
 pipeline {
     agent any
     environment {
         TOKEN = credentials('gh-token')
-        DOCKERHUB = credentials('dockerhub')
     }
     triggers {
          pollSCM('* * * * *')
@@ -36,7 +30,6 @@ pipeline {
         stage('Build') {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
-                sh 'docker login -u ${DOCKERHUB_USR} -p ${DOCKERHUB_PSW}'
                 build(services)
             }   
         }   
