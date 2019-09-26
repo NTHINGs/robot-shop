@@ -11,6 +11,18 @@ def services = [
     'dispatch',
     'web'
 ]
+
+@NonCPS // has to be NonCPS or the build breaks on the call to .each
+def build(services) {
+    services.each { service ->
+        sh '''
+            docker build --no-cache -t ${service} .
+            docker tag ${service}:latest ${DOCKERHUB_REPO}/${service}:latest
+            docker push ${DOCKERHUB_REPO}/${service}:latest
+            docker rmi ${service}:latest
+        '''   
+    }
+}
 pipeline {
     agent any
     environment {
@@ -25,14 +37,7 @@ pipeline {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
                 sh 'docker login -u ${DOCKERHUB_USR} -p ${DOCKERHUB_PSW}'
-                for (int i = 0; i < services.size(); i++) {
-                    sh '''
-                        docker build --no-cache -t ${services[i]} .
-                        docker tag ${services[i]}:latest ${DOCKERHUB_REPO}/${services[i]}:latest
-                        docker push ${DOCKERHUB_REPO}/${services[i]}:latest
-                        docker rmi ${services[i]}:latest
-                    '''    
-                }
+                build(services)
             }   
         }   
 
