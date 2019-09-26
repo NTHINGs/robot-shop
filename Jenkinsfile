@@ -21,20 +21,20 @@ pipeline {
          pollSCM('* * * * *')
     }
     stages {
-        for (int i = 0; i < services.size(); i++) {
-            stage('Build ${services[i]}'){ 
-                when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
-                steps {
+        stage('Build') {
+            when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
+            steps {
+                sh 'docker login -u ${DOCKERHUB_USR} -p ${DOCKERHUB_PSW}'
+                for (int i = 0; i < services.size(); i++) {
                     sh '''
-                        docker login -u ${DOCKERHUB_USR} -p ${DOCKERHUB_PSW}
                         docker build --no-cache -t ${services[i]} .
                         docker tag ${services[i]}:latest ${DOCKERHUB_REPO}/${services[i]}:latest
                         docker push ${DOCKERHUB_REPO}/${services[i]}:latest
                         docker rmi ${services[i]}:latest
                     '''    
                 }
-            }
-        }
+            }   
+        }   
 
         stage('deploy'){
           when { expression { env.BRANCH_NAME ==~ /master/ } }
