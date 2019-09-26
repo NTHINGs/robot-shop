@@ -18,7 +18,7 @@ pipeline {
         DOCKERHUB = credentials('dockerhub')
     }
     triggers {
-         pollSCM('H/5 * * * *')
+         pollSCM('* * * * *')
     }
     stages {
         services.each { service ->
@@ -35,7 +35,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('deploy'){
           when { expression { env.BRANCH_NAME ==~ /master/ } }
           steps {
