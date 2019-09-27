@@ -13,9 +13,9 @@ def services = [
 
 @NonCPS // has to be NonCPS or the build breaks on the call to .each
 def build(services) {
-    echo services
     services.each { service ->
         dir(service) {
+            echo 'service:'
             echo service
             def serviceImg = docker.build '${service}:latest'
             serviceImg.push 'latest'
