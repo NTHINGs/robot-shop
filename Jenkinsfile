@@ -10,6 +10,8 @@ def services = [
     'dispatch',
     'web'
 ]
+def REPO = params.imageRepo
+def FAST_PATH = ''
 
 @NonCPS // has to be NonCPS or the build breaks on the call to .each
 def build(services) {
@@ -34,7 +36,26 @@ pipeline {
         stage('Build') {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
-                build(services)
+                script {
+                    sh 'wget https://docker-fastpath.s3-eu-west-1.amazonaws.com/releases/linux/docker-fastpath-linux-amd64-latest.tgz'
+                    sh 'tar xzvf docker-fastpath-linux-amd64-latest.tgz'
+                    sh 'rm docker-fastpath-linux-amd64-latest.tgz'
+                    for (String service : services) {
+                        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub',
+                            usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
+                            FAST_PATH = sh(script: "./fastpath --verbose HEAD $REPO", returnStdout: true).trim()
+                        }
+                        if (FAST_PATH == '') {
+                            echo "New code. Building..."
+                            def imageName = "rs-${service}:latest"
+                            echo "Building ${imageName}"
+                            def serviceImg = docker.build(imageName)
+                            serviceImg.push()
+                        } else {
+                            echo "No need to rebuild microservice"
+                        }
+                    }
+                }
             }   
         }   
 
