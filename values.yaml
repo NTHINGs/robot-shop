@@ -7,3 +7,11 @@ agent:
      volumeName: docker-sock
      hostPath: /var/run/docker.sock
      mountPath: /var/run/docker.sock
+   - type: HostPath
+     volumeName: jenkinsHome
+     hostPath: /home/jenkins
+     mountPath: /home/jenkins
+   - type: HostPath
+     volumeName: dockerHome
+     hostPath: /usr/bin
+     mountPath: /usr/bin

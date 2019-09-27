@@ -15,8 +15,6 @@ def services = [
 def build(services) {
     services.each { service ->
         dir(service) {
-            def dockerHome = tool 'docker'
-            env.PATH = "${dockerHome}/bin:${env.PATH}"
             def serviceImg = docker.build '${service}:latest'
             serviceImg.push 'latest'
         }
