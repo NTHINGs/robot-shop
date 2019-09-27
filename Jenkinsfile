@@ -32,6 +32,8 @@ pipeline {
         stage('Build') {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
+                def dockerHome = tool 'docker'
+                env.PATH = "${dockerHome}/bin:${env.PATH}"
                 build(services)
             }   
         }   
