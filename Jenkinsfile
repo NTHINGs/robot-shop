@@ -16,7 +16,6 @@ pipeline {
     environment {
         TOKEN = credentials('gh-token')
     }
-    agent any
     triggers {
          pollSCM('H/5 * * * *')
     }
