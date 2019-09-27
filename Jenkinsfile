@@ -13,24 +13,13 @@ def services = [
 def REPO = params.imageRepo
 def FAST_PATH = ''
 
-@NonCPS // has to be NonCPS or the build breaks on the call to .each
-def build(services) {
-    services.each { service ->
-        dir(service) {
-            def imageName = "rs-${service}:latest"
-            echo "Building ${imageName}"
-            def serviceImg = docker.build(imageName)
-            serviceImg.push()
-        }
-    }
-}
 pipeline {
     agent any
     environment {
         TOKEN = credentials('gh-token')
     }
     triggers {
-         pollSCM('* * * * *')
+         pollSCM('H/5 * * * *')
     }
     stages {
         stage('Build') {
@@ -44,15 +33,15 @@ pipeline {
                         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker-hub',
                             usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
                             FAST_PATH = sh(script: "./fastpath --verbose HEAD $REPO", returnStdout: true).trim()
-                        }
-                        if (FAST_PATH == '') {
-                            echo "New code. Building..."
-                            def imageName = "rs-${service}:latest"
-                            echo "Building ${imageName}"
-                            def serviceImg = docker.build(imageName)
-                            serviceImg.push()
-                        } else {
-                            echo "No need to rebuild microservice"
+                            if (FAST_PATH == '') {
+                                echo "New code. Building..."
+                                def imageName = "rs-${service}:latest"
+                                echo "Building ${imageName}"
+                                def serviceImg = docker.build(imageName)
+                                serviceImg.push()
+                            } else {
+                                echo "No need to rebuild microservice"
+                            }
                         }
                     }
                 }
