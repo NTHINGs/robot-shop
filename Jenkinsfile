@@ -25,18 +25,24 @@ pipeline {
             steps {
                 script {
                     for (String service : services) {
+                        echo env.GIT_PREVIOUS_COMMIT
+                        echo env.GIT_COMMIT
                         MICROSERVICE_CHANGED = sh (
                             script: "git diff --name-only $env.GIT_PREVIOUS_COMMIT $env.GIT_COMMIT $service",
-                            returnStatus: true
-                        ) == 0
-                        echo "MICROSERVICE SOURCE CODE CHANGED: $MICROSERVICE_CHANGED"
-                        docker.withRegistry( '', 'docker-hub' ) {
-                            dir(service) {
-                                def imageName = "nthingsm/rs-$service:latest"
-                                def serviceImg = docker.build(imageName)
-                                serviceImg.push()
-                                sh "docker rmi $imageName"
+                            returnStdout: true
+                        ).trim().length() > 0
+                        if(MICROSERVICE_CHANGED) {
+                            echo "MICROSERVICE SOURCE CODE CHANGED: $MICROSERVICE_CHANGED"
+                            docker.withRegistry( '', 'docker-hub' ) {
+                                dir(service) {
+                                    def imageName = "nthingsm/rs-$service:latest"
+                                    def serviceImg = docker.build(imageName)
+                                    serviceImg.push()
+                                    sh "docker rmi $imageName"
+                                }
                             }
+                        } else {
+                            echo "No need to rebuild this microservice."
                         }
                     }
                 }
