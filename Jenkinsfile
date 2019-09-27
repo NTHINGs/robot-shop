@@ -1,5 +1,5 @@
 def services = [
-    'mongo',
+    'mongodb',
     'catalogue',
     'user',
     'cart',
@@ -15,7 +15,7 @@ def services = [
 def build(services) {
     services.each { service ->
         dir(service) {
-            def imageName = "${service}:latest"
+            def imageName = "rs-${service}:latest"
             echo "Building ${imageName}"
             def serviceImg = docker.build(imageName)
             serviceImg.push()
