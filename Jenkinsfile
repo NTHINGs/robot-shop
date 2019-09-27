@@ -13,8 +13,10 @@ def services = [
 
 @NonCPS // has to be NonCPS or the build breaks on the call to .each
 def build(services) {
+    echo services
     services.each { service ->
         dir(service) {
+            echo service
             def serviceImg = docker.build '${service}:latest'
             serviceImg.push 'latest'
         }
@@ -36,8 +38,8 @@ pipeline {
             }   
         }   
 
-        stage('deploy'){
-          when { expression { env.BRANCH_NAME ==~ /master/ } }
+        stage('deploy') {
+          when { branch 'master' }
           steps {
               sh 'deploy services to k8s'
           }
