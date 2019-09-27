@@ -10,8 +10,6 @@ def services = [
     'dispatch',
     'web'
 ]
-def REPO = params.imageRepo
-def FAST_PATH = ''
 
 pipeline {
     agent any
@@ -30,12 +28,12 @@ pipeline {
                     sh 'tar xzvf docker-fastpath-linux-amd64-latest.tgz'
                     sh 'rm docker-fastpath-linux-amd64-latest.tgz'
                     for (String service : services) {
+                        def imageName = "rs-${service}:latest"
                         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker-hub',
                             usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
-                            FAST_PATH = sh(script: "./fastpath --verbose HEAD $REPO", returnStdout: true).trim()
+                            def FAST_PATH = sh(script: "./fastpath --verbose HEAD $imageName", returnStdout: true).trim()
                             if (FAST_PATH == '') {
                                 echo "New code. Building..."
-                                def imageName = "rs-${service}:latest"
                                 echo "Building ${imageName}"
                                 def serviceImg = docker.build(imageName)
                                 serviceImg.push()
