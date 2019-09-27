@@ -15,8 +15,7 @@ def services = [
 def build(services) {
     services.each { service ->
         dir(service) {
-            echo 'service:'
-            echo service
+            echo 'Building ${service}:latest'
             def serviceImg = docker.build('${service}:latest')
             serviceImg.push()
         }
