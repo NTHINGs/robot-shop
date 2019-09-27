@@ -17,8 +17,8 @@ def build(services) {
         dir(service) {
             echo 'service:'
             echo service
-            def serviceImg = docker.build '${service}:latest'
-            serviceImg.push 'latest'
+            def serviceImg = docker.build('${service}:latest')
+            serviceImg.push()
         }
     }
 }
