@@ -41,7 +41,7 @@ pipeline {
                     sh 'tar xzvf docker-fastpath-linux-amd64-latest.tgz'
                     sh 'rm docker-fastpath-linux-amd64-latest.tgz'
                     for (String service : services) {
-                        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub',
+                        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker-hub',
                             usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
                             FAST_PATH = sh(script: "./fastpath --verbose HEAD $REPO", returnStdout: true).trim()
                         }
