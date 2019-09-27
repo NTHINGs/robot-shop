@@ -28,9 +28,9 @@ pipeline {
                     sh 'tar xzvf docker-fastpath-linux-amd64-latest.tgz'
                     sh 'rm docker-fastpath-linux-amd64-latest.tgz'
                     for (String service : services) {
-                        def imageName = "rs-${service}:latest"
                         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker-hub',
                             usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
+                            def imageName = "$DOCKER_USERNAME/rs-${service}:latest"
                             def FAST_PATH = sh(script: "./fastpath --verbose HEAD $imageName", returnStdout: true).trim()
                             if (FAST_PATH == '') {
                                 echo "New code. Building..."
