@@ -25,10 +25,13 @@ pipeline {
             steps {
                 script {
                     for (String service : services) {
-                        MICROSERVICE_CHANGED = sh (
-                            script: "git diff --name-only $env.GIT_PREVIOUS_COMMIT $env.GIT_COMMIT $service",
-                            returnStdout: true
-                        ).trim().length() > 0
+                        MICROSERVICE_CHANGED = true
+                        if ($env.GIT_PREVIOUS_COMMIT != null) {
+                            MICROSERVICE_CHANGED = sh (
+                                script: "git diff --name-only $env.GIT_PREVIOUS_COMMIT $env.GIT_COMMIT $service",
+                                returnStdout: true
+                            ).trim().length() > 0
+                        }
                         if(MICROSERVICE_CHANGED) {
                             echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
                             docker.withRegistry( '', 'docker-hub' ) {
