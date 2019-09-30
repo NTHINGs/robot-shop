@@ -11,7 +11,7 @@ def services = [
     'web'
 ]
 
-podTemplate(label: 'robot-shop', containers: [
+podTemplate(label: 'master', containers: [
     containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true, command: 'cat'),
     containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.0', command: 'cat', ttyEnabled: true),
     containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true)
@@ -20,9 +20,7 @@ podTemplate(label: 'robot-shop', containers: [
     hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
   ]) {
     node('master') {
-
         stage('Build Microservices (if needed)') {
-            when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             container('docker') {
 
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', 
@@ -53,7 +51,6 @@ podTemplate(label: 'robot-shop', containers: [
         }
 
         stage('pull-request') {
-            when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
                 script {
                     def repoName = "robot-shop"
