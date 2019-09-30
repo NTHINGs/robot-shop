@@ -19,7 +19,7 @@ podTemplate(label: 'robot-shop', containers: [
   volumes: [
     hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
   ]) {
-    node('robot-shop') {
+    node('master') {
 
         stage('Build Microservices (if needed)') {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
