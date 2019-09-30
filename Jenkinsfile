@@ -11,46 +11,46 @@ def services = [
     'web'
 ]
 
-podTemplate(label: 'master', containers: [
-    containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.0', command: 'cat', ttyEnabled: true),
-    containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true)
-  ],
-  volumes: [
-    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
-  ]) {
-    node('master') {
-        stage('Build Microservices (if needed)') {
-            container('docker') {
-
-                withCredentials([[$class: 'UsernamePasswordMultiBinding', 
-                    credentialsId: 'docker-hub',
-                    usernameVariable: 'DOCKER_HUB_USER', 
-                    passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
-                        for (String service : services) {
-                            MICROSERVICE_CHANGED = sh (
-                                script: "git diff --name-only $env.GIT_PREVIOUS_COMMIT $env.GIT_COMMIT $service",
-                                returnStdout: true
-                            ).trim().length() > 0
-                            if(MICROSERVICE_CHANGED) {
-                                echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
-                                docker.withRegistry( '', 'docker-hub' ) {
-                                    dir(service) {
-                                        imageName = "nthingsm/rs-$service:latest"
-                                        serviceImg = docker.build(imageName)
-                                        serviceImg.push()
-                                        sh "docker rmi $imageName"
-                                    }
-                                }
-                            } else {
-                                echo "No need to rebuild this microservice $service."
-                            }
-                        }
-                }
+pipeline {
+    agent any
+    environment {
+        TOKEN = credentials('gh-token')
+    }
+    triggers {
+         pollSCM('H/5 * * * *')
+    }
+    stages {
+        stage('Build') {
+            agent {
+                docker { image 'docker' }
             }
-        }
-
+            when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
+            steps {
+                script {
+                    for (String service : services) {
+                        MICROSERVICE_CHANGED = sh (
+                            script: "git diff --name-only $env.GIT_PREVIOUS_COMMIT $env.GIT_COMMIT $service",
+                            returnStdout: true
+                        ).trim().length() > 0
+                        if(MICROSERVICE_CHANGED) {
+                            echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
+                            docker.withRegistry( '', 'docker-hub' ) {
+                                dir(service) {
+                                    imageName = "nthingsm/rs-$service:latest"
+                                    serviceImg = docker.build(imageName)
+                                    serviceImg.push()
+                                    sh "docker rmi $imageName"
+                                }
+                            }
+                        } else {
+                            echo "No need to rebuild this microservice $service."
+                        }
+                    }
+                }
+            }   
+        }   
         stage('pull-request') {
+            when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
                 script {
                     def repoName = "robot-shop"
@@ -60,22 +60,27 @@ podTemplate(label: 'master', containers: [
             }
         }
 
-        stage('do some kubectl work') {
-            container('kubectl') {
+        stage('deploy') {
+            agent {
+                docker { image 'lachlanevenson/k8s-kubectl:v1.8.0' }
+            }
+            steps {
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', 
                         credentialsId: 'docker-hub',
                         usernameVariable: 'DOCKER_HUB_USER',
                         passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
                     
                     sh "kubectl get nodes"
-                }
+                }   
             }
         }
-        stage('do some helm work') {
-            container('helm') {
-
-               sh "helm ls"
-            }
-        }
+    }
+    post {
+      success {
+          echo 'success'
+      }
+      failure {
+           echo 'FAILED'
+      }
     }
 }
