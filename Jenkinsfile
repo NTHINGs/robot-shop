@@ -21,9 +21,6 @@ pipeline {
     }
     stages {
         stage('Build') {
-            agent {
-                docker { image 'docker' }
-            }
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
                 script {
