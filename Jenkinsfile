@@ -69,7 +69,7 @@ pipeline {
                         withKubeConfig([credentialsId: 'kubeconfig',
                             serverUrl: 'https://192.168.33.108:8443',
                             namespace: 'robot-shop']) {
-                            sh "kubectl get nodes"
+                            sh "kubectl apply -f K8s/descriptors -n robot-shop"
                         }
                     }   
                 }
