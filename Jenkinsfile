@@ -26,7 +26,7 @@ pipeline {
                 script {
                     for (String service : services) {
                         MICROSERVICE_CHANGED = true
-                        if ($env.GIT_PREVIOUS_COMMIT != null) {
+                        if (env.GIT_PREVIOUS_COMMIT != null) {
                             MICROSERVICE_CHANGED = sh (
                                 script: "git diff --name-only $env.GIT_PREVIOUS_COMMIT $env.GIT_COMMIT $service",
                                 returnStdout: true
