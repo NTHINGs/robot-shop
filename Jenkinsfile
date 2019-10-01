@@ -62,15 +62,13 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                    docker.image('lachlanevenson/k8s-kubectl:v1.8.0').inside {
-                        withCredentials([[$class: 'UsernamePasswordMultiBinding', 
-                                credentialsId: 'docker-hub',
-                                usernameVariable: 'DOCKER_HUB_USER',
-                                passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
-                            
-                            sh "kubectl get nodes"
-                        }   
-                    }
+                    withCredentials([[$class: 'UsernamePasswordMultiBinding', 
+                            credentialsId: 'docker-hub',
+                            usernameVariable: 'DOCKER_HUB_USER',
+                            passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
+                        
+                        sh "kubectl get nodes"
+                    }   
                 }
             }
         }
