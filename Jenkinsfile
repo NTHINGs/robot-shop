@@ -66,8 +66,13 @@ pipeline {
                             credentialsId: 'docker-hub',
                             usernameVariable: 'DOCKER_HUB_USER',
                             passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
-                        
-                        sh "kubectl get nodes"
+                        withKubeConfig([
+                            credentialsId: 'kubeconfig',
+                            serverUrl: 'https://192.168.33.108:8443',
+                            namespace: 'robot-shop'
+                        ]) {
+                            sh "kubectl get nodes"
+                        }
                     }   
                 }
             }

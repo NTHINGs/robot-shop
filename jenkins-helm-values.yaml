@@ -18,19 +18,3 @@ agent:
      volumeName: docker-sock
      hostPath: /var/run/docker.sock
      mountPath: /var/run/docker.sock
-   - type: HostPath
-     hostPath: /minikube
-     mountPath: /minikube
-persistence:
-  volumes:
-    - name: jenkins-persistence
-      hostPath:
-        path: /hosthome/jenkins
-    - name: minikube-config
-      hostPath:
-        path: /hosthome/.minikube
-  mounts:
-    - mountPath: /minikube
-      name: minikube-config
-    - mountPath: /var/jenkins_home
-      name: jenkins-persistence
