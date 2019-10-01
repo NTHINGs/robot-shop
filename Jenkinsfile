@@ -13,9 +13,6 @@ def services = [
 
 pipeline {
     agent any
-    environment {
-        TOKEN = credentials('gh-token')
-    }
     triggers {
          pollSCM('H/5 * * * *')
     }
@@ -53,9 +50,11 @@ pipeline {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
                 script {
-                    def repoName = "robot-shop"
-                    input(message: "Do you want to create a PR to apply this deployment?", ok: "yes")
-                    httpRequest authentication: 'git_user', contentType: 'APPLICATION_JSON_UTF8', httpMode: 'POST', requestBody: """{ "title": "PR Created Automatically by Jenkins", "body": "From Jenkins job: ${env.BUILD_URL}", "head": "nthings:${env.BRANCH_NAME}", "base": "master"}""", url: "https://api.github.com/repos/nthings/${repoName}/pulls"
+                    timeout(time: 15, unit: 'MINUTES') { 
+                        def repoName = "robot-shop"
+                        input(message: "Do you want to create a PR to apply this deployment?", ok: "yes")
+                        httpRequest authentication: 'git_user', contentType: 'APPLICATION_JSON_UTF8', httpMode: 'POST', requestBody: """{ "title": "PR Created Automatically by Jenkins", "body": "From Jenkins job: ${env.BUILD_URL}", "head": "nthings:${env.BRANCH_NAME}", "base": "master"}""", url: "https://api.github.com/repos/nthings/${repoName}/pulls"
+                    }
                 }
             }
         }
