@@ -60,6 +60,7 @@ pipeline {
         }
 
         stage('deploy') {
+            when { branch 'master' }
             steps {
                 script {
                     withCredentials([[$class: 'UsernamePasswordMultiBinding', 
