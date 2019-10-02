@@ -71,7 +71,7 @@ pipeline {
                             usernameVariable: 'DOCKER_HUB_USER',
                             passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
                         withKubeConfig([credentialsId: 'kubeconfig',
-                            serverUrl: "$K8S_URL"
+                            serverUrl: "$K8S_URL",
                             namespace: 'mauricio']) {
                                 sh "kubectl apply -f K8s/descriptors -n mauricio"
                         }
