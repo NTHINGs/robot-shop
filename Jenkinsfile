@@ -1,8 +1,18 @@
+def services = [
+    'mongodb',
+    'catalogue',
+    'user',
+    'cart',
+    'mysql',
+    'shipping',
+    'ratings',
+    'payment',
+    'dispatch',
+    'web'
+]
+
 pipeline {
     agent any
-    environment {
-        TOKEN = credentials('gh-token')
-    }
     triggers {
          pollSCM('H/5 * * * *')
     }

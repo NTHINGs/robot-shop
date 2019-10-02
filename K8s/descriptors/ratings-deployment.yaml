@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ratings
-        image: robotshop/rs-ratings:latest
+        image: nthingsm/rs-ratings:latest
         ports:
         - containerPort: 80
         resources:

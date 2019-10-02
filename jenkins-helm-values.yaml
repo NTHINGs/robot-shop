@@ -1,0 +1,21 @@
+master:
+  adminUser: admin
+  adminPassword: '123'
+  installPlugins: [
+    'kubernetes:1.18.2',
+    'workflow-aggregator:2.6',
+    'credentials-binding:1.19',
+    'git:3.11.0',
+    'workflow-job:2.33',
+    'http_request:1.8.23',
+    'kubernetes-cli:1.7.0'
+  ]
+agent:
+  image: nthingsm/jenkins-jnlp-slave
+  tag: latest
+  alwaysPullImage: true
+  volumes:
+   - type: HostPath
+     volumeName: docker-sock
+     hostPath: /var/run/docker.sock
+     mountPath: /var/run/docker.sock

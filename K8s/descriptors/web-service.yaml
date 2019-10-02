@@ -4,11 +4,24 @@ metadata:
   name: web
   labels:
     service: web
+# AWS
+#spec:
+#  ports:
+#  - name: http
+#    port: 8080
+#    targetPort: 8080
+#  selector:
+#    service: web
+#  type: LoadBalancer
+# Minikube config
 spec:
   ports:
-  - name: http
+  - name: "8080"
     port: 8080
+    protocol: TCP
     targetPort: 8080
+    nodePort: 30080
   selector:
     service: web
-  type: LoadBalancer
+  sessionAffinity: None
+  type: NodePort

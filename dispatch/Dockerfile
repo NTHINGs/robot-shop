@@ -13,6 +13,4 @@ RUN curl -fsSL -o /usr/local/bin/dep ${DEP_URL} && \
 RUN dep ensure
 RUN go build -o bin/gorcv
 
-# TODO stage this build
-
 CMD bin/gorcv
