@@ -37,7 +37,7 @@ pipeline {
                             docker.withRegistry( '', 'docker-hub' ) {
                                 dir(service) {
                                     imageName = "nthingsm/rs-$service:latest"
-                                    serviceImg = docker.build(imageName, '--network=host')
+                                    serviceImg = docker.build(imageName, '--network=host .')
                                     serviceImg.push()
                                     sh "docker rmi $imageName"
                                 }
