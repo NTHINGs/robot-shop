@@ -32,7 +32,7 @@ pipeline {
                                 returnStdout: true
                             ).trim().length() > 0
                         }
-                        if(true) {
+                        if(MICROSERVICE_CHANGED) {
                             echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
                             docker.withRegistry( '', 'docker-hub' ) {
                                 dir(service) {
