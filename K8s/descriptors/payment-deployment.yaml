@@ -20,6 +20,7 @@ spec:
       containers:
       - name: payment
         image: nthingsm/rs-payment:latest
+        imagePullPolicy: Always
         # agent networking access
         env:
           - name: INSTANA_AGENT_HOST

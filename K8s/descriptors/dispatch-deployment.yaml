@@ -17,6 +17,7 @@ spec:
       containers:
       - name: dispatch
         image: nthingsm/rs-dispatch:latest
+        imagePullPolicy: Always
         env:
           # agent networking access
           - name: INSTANA_AGENT_HOST

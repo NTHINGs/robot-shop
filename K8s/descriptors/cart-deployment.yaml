@@ -17,6 +17,7 @@ spec:
       containers:
       - name: cart
         image: nthingsm/rs-cart:latest
+        imagePullPolicy: Always
         # agent networking access 
         env:
           - name: INSTANA_AGENT_HOST

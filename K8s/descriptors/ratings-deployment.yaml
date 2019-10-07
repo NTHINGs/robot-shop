@@ -17,6 +17,7 @@ spec:
       containers:
       - name: ratings
         image: nthingsm/rs-ratings:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:

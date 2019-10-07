@@ -17,6 +17,7 @@ spec:
       containers:
       - name: user
         image: nthingsm/rs-user:latest
+        imagePullPolicy: Always
         env:
           # agent networking access
           - name: INSTANA_AGENT_HOST

@@ -17,6 +17,7 @@ spec:
       containers:
       - name: web
         image: nthingsm/rs-web:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         resources:

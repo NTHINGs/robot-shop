@@ -17,6 +17,7 @@ spec:
       containers:
       - name: catalogue
         image: nthingsm/rs-catalogue:latest
+        imagePullPolicy: Always
         env:
           - name: INSTANA_AGENT_HOST
             valueFrom:

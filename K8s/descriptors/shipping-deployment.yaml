@@ -17,6 +17,7 @@ spec:
       containers:
       - name: shipping
         image: nthingsm/rs-shipping:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         # it's Java it needs lots of memory
