@@ -51,7 +51,7 @@ pipeline {
                                         returnStdout: true
                                     ).trim()
 
-                                    buildImage("nthingsm", service, "latest")
+                                    buildImage("nthingsm", service, image_tag)
                                 }
                             }
                         } else {
@@ -87,7 +87,11 @@ pipeline {
                             namespace: 'mauricio']) {
                                 //sh "kubectl apply -f K8s/descriptors -n mauricio"
                                 sh "helm init --tiller-namespace mauricio "
-                                sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=latest"
+                                image_tag = sh (
+                                    script: "git rev-parse --short HEAD",
+                                    returnStdout: true
+                                ).trim()
+                                sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=$image_tags"
                             }
                     }
                 }   
