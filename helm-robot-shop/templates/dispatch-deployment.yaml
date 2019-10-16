@@ -4,6 +4,7 @@ metadata:
   name: dispatch
   labels:
     service: dispatch
+    date: "{{ .Release.Time.Seconds }}"
 spec:
   replicas: 1
   selector:

@@ -47,12 +47,7 @@ pipeline {
                             echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
                             docker.withRegistry( '', 'docker-hub' ) {
                                 dir(service) {
-                                    image_tag = sh (
-                                        script: "git rev-parse --short HEAD",
-                                        returnStdout: true
-                                    ).trim()
-
-                                    buildImage("nthingsm", service, image_tag)
+                                    buildImage("nthingsm", service, "latest")
                                 }
                             }
                         } else {
@@ -88,7 +83,7 @@ pipeline {
                             namespace: 'mauricio']) {
                                 //sh "kubectl apply -f K8s/descriptors -n mauricio"
                                 sh "helm init --tiller-namespace mauricio "
-                                sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=$image_tag"
+                                sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=latest"
                             }
                     }
                 }   
