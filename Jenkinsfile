@@ -11,7 +11,7 @@ def services = [
     'web'
 ]
 
-def image_tag = "latest"
+def image_tag
 
 def buildImage(String repo, String service, String tag) {
     imageName = "$repo/rs-$service:$tag"
@@ -88,10 +88,6 @@ pipeline {
                             namespace: 'mauricio']) {
                                 //sh "kubectl apply -f K8s/descriptors -n mauricio"
                                 sh "helm init --tiller-namespace mauricio "
-                                image_tag = sh (
-                                    script: "git rev-parse --short HEAD",
-                                    returnStdout: true
-                                ).trim()
                                 sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=$image_tag"
                             }
                     }
