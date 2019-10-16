@@ -80,8 +80,8 @@ pipeline {
                         withKubeConfig([credentialsId: 'kubeconfig',
                             serverUrl: "$K8S_URL",
                             namespace: 'mauricio']) {
-                                sh "kubectl apply -f K8s/descriptors -n mauricio"
-                        }
+                                //sh "kubectl apply -f K8s/descriptors -n mauricio"
+                                sh "helm upgrade --install robot-shop helm-robot-shop --set ImageTag=${args.tag} --namespace=mauricio"                        }
                     }
                         
                 }   
