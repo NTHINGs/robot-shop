@@ -4,7 +4,6 @@ metadata:
   name: mysql
   labels:
     service: mysql
-    date: "{{ .Release.Time.Seconds }}"
 spec:
   replicas: 1
   selector:
@@ -14,6 +13,7 @@ spec:
     metadata:
       labels:
         service: mysql
+        date: "{{ .Release.Time.Seconds }}"
       annotations:
         sidecar.istio.io/inject: "false"
     spec:

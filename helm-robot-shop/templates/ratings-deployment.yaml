@@ -4,7 +4,6 @@ metadata:
   name: ratings
   labels:
     service: ratings
-    date: "{{ .Release.Time.Seconds }}"
 spec:
   replicas: 1
   selector:
@@ -14,6 +13,7 @@ spec:
     metadata:
       labels:
         service: ratings
+        date: "{{ .Release.Time.Seconds }}"
     spec:
       containers:
       - name: ratings

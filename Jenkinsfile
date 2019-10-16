@@ -27,7 +27,7 @@ pipeline {
     }
     environment {
         K8S_URL = credentials('k8s-url')
-        FORCE_BUILD = true
+        FORCE_BUILD = false
     }
     stages {
         stage('Build') {
