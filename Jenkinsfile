@@ -11,6 +11,8 @@ def services = [
     'web'
 ]
 
+def image_tag = "latest"
+
 def buildImage(String repo, String service, String tag) {
     imageName = "$repo/rs-$service:$tag"
     serviceImg = docker.build(imageName, '--network=host .')
@@ -31,21 +33,24 @@ pipeline {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
                 script {
+                    master_latest = sh (
+                        script: "git rev-parse origin/master",
+                        returnStdout: true
+                    ).trim()
                     for (String service : services) {
                         MICROSERVICE_CHANGED = sh (
-                            script: "git diff --name-only master $env.GIT_COMMIT $service",
+                            script: "git diff --name-only $master_latest $env.GIT_COMMIT $service",
                             returnStdout: true
                         ).trim().length() > 0
                         if(MICROSERVICE_CHANGED) {
                             echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
                             docker.withRegistry( '', 'docker-hub' ) {
                                 dir(service) {
-                                    hash = sh (
+                                    image_tag = sh (
                                         script: "git rev-parse --short HEAD",
                                         returnStdout: true
                                     ).trim()
 
-                                    buildImage("nthingsm", service, hash)
                                     buildImage("nthingsm", service, "latest")
                                 }
                             }
@@ -81,9 +86,10 @@ pipeline {
                             serverUrl: "$K8S_URL",
                             namespace: 'mauricio']) {
                                 //sh "kubectl apply -f K8s/descriptors -n mauricio"
-                                sh "helm upgrade --install robot-shop helm-robot-shop --set ImageTag=${args.tag} --namespace=mauricio"                        }
+                                sh "helm init"
+                                sh "helm upgrade --install robot-shop helm-robot-shop --set ImageTag=latest --namespace=mauricio"
+                            }
                     }
-                        
                 }   
             }
         }
