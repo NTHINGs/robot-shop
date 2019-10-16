@@ -43,7 +43,7 @@ pipeline {
                             script: "git diff --name-only $master_latest $env.GIT_COMMIT $service",
                             returnStdout: true
                         ).trim().length() > 0
-                        if(MICROSERVICE_CHANGED || env.FORCE_BUILD) {
+                        if(MICROSERVICE_CHANGED || env.FORCE_BUILD == true) {
                             echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
                             docker.withRegistry( '', 'docker-hub' ) {
                                 dir(service) {
