@@ -11,6 +11,13 @@ def services = [
     'web'
 ]
 
+def buildImage(String repo, String service, String tag) {
+    imageName = "$repo/rs-$service:$tag"
+    serviceImg = docker.build(imageName, '--network=host .')
+    serviceImg.push()
+    sh "docker rmi $imageName"
+}
+
 pipeline {
     agent any
     triggers {
@@ -25,21 +32,21 @@ pipeline {
             steps {
                 script {
                     for (String service : services) {
-                        MICROSERVICE_CHANGED = true
-                        if (env.GIT_PREVIOUS_COMMIT != null) {
-                            MICROSERVICE_CHANGED = sh (
-                                script: "git diff --name-only $env.GIT_PREVIOUS_COMMIT $env.GIT_COMMIT $service",
-                                returnStdout: true
-                            ).trim().length() > 0
-                        }
+                        MICROSERVICE_CHANGED = sh (
+                            script: "git diff --name-only master $env.GIT_COMMIT $service",
+                            returnStdout: true
+                        ).trim().length() > 0
                         if(MICROSERVICE_CHANGED) {
                             echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
                             docker.withRegistry( '', 'docker-hub' ) {
                                 dir(service) {
-                                    imageName = "nthingsm/rs-$service:latest"
-                                    serviceImg = docker.build(imageName, '--network=host .')
-                                    serviceImg.push()
-                                    sh "docker rmi $imageName"
+                                    hash = sh (
+                                        script: "git rev-parse --short HEAD",
+                                        returnStdout: true
+                                    ).trim()
+
+                                    buildImage("nthingsm", service, hash)
+                                    buildImage("nthingsm", service, "latest")
                                 }
                             }
                         } else {
