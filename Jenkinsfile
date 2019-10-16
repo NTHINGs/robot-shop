@@ -87,7 +87,7 @@ pipeline {
                             namespace: 'mauricio']) {
                                 //sh "kubectl apply -f K8s/descriptors -n mauricio"
                                 sh "helm init --tiller-namespace mauricio "
-                                sh "helm upgrade --install robot-shop helm-robot-shop --set ImageTag=latest --namespace=mauricio --tiller-namespace mauricio"
+                                sh "helm upgrade --install robot-shop helm-robot-shop --set ImageTag=latest --namespace=mauricio --tiller-namespace mauricio --service-account mauricio:jenkins-robot"
                             }
                     }
                 }   
