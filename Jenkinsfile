@@ -33,9 +33,13 @@ pipeline {
             when { expression { env.BRANCH_NAME ==~ /feat.*/ } }
             steps {
                 script {
+                    master_latest = sh (
+                        script: "git rev-parse master",
+                        returnStdout: true
+                    ).trim()
                     for (String service : services) {
                         MICROSERVICE_CHANGED = sh (
-                            script: "git diff --name-only master $env.GIT_COMMIT $service",
+                            script: "git diff --name-only $master_latest $env.GIT_COMMIT $service",
                             returnStdout: true
                         ).trim().length() > 0
                         if(MICROSERVICE_CHANGED) {
