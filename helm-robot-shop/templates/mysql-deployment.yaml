@@ -4,6 +4,7 @@ metadata:
   name: mysql
   labels:
     service: mysql
+    date: "{{ .Release.Time.Seconds }}"
 spec:
   replicas: 1
   selector:

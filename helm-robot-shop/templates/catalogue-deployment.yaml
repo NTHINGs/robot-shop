@@ -4,6 +4,7 @@ metadata:
   name: catalogue
   labels:
     service: catalogue
+    date: "{{ .Release.Time.Seconds }}"
 spec:
   replicas: 1
   selector:

@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service: redis
+    date: "{{ .Release.Time.Seconds }}"
   name: redis
 spec:
   replicas: 1
