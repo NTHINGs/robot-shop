@@ -27,6 +27,7 @@ pipeline {
     }
     environment {
         K8S_URL = credentials('k8s-url')
+        FORCE_BUILD = true
     }
     stages {
         stage('Build') {
@@ -42,7 +43,7 @@ pipeline {
                             script: "git diff --name-only $master_latest $env.GIT_COMMIT $service",
                             returnStdout: true
                         ).trim().length() > 0
-                        if(MICROSERVICE_CHANGED) {
+                        if(MICROSERVICE_CHANGED || env.FORCE_BUILD) {
                             echo "MICROSERVICE $service SOURCE CODE CHANGED. REBUILDING IMAGE"
                             docker.withRegistry( '', 'docker-hub' ) {
                                 dir(service) {
@@ -91,7 +92,7 @@ pipeline {
                                     script: "git rev-parse --short HEAD",
                                     returnStdout: true
                                 ).trim()
-                                sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=$image_tags"
+                                sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=$image_tag"
                             }
                     }
                 }   
