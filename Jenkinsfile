@@ -27,7 +27,6 @@ pipeline {
     }
     environment {
         K8S_URL = credentials('k8s-url')
-        TILLER-NAMESPACE = "mauricio"
     }
     stages {
         stage('Build') {
@@ -87,8 +86,8 @@ pipeline {
                             serverUrl: "$K8S_URL",
                             namespace: 'mauricio']) {
                                 //sh "kubectl apply -f K8s/descriptors -n mauricio"
-                                sh "helm init"
-                                sh "helm upgrade --install robot-shop helm-robot-shop --set ImageTag=latest --namespace=mauricio"
+                                sh "helm init --tiller-namespace mauricio "
+                                sh "helm upgrade --install robot-shop helm-robot-shop --set ImageTag=latest --namespace=mauricio --tiller-namespace mauricio"
                             }
                     }
                 }   
