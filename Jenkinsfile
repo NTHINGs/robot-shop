@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     master_latest = sh (
-                        script: "git rev-parse master",
+                        script: "git rev-parse origin/master",
                         returnStdout: true
                     ).trim()
                     for (String service : services) {
