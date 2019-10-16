@@ -5,7 +5,6 @@ metadata:
   labels:
     service: payment
     stage: prod
-    date: "{{ .Release.Time.Seconds }}"
 spec:
   replicas: 1
   selector:
@@ -17,6 +16,7 @@ spec:
       labels:
         service: payment
         stage: prod
+        date: "{{ .Release.Time.Seconds }}"
     spec:
       containers:
       - name: payment
