@@ -80,10 +80,10 @@ pipeline {
                             passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
                         withKubeConfig([credentialsId: 'kubeconfig',
                             serverUrl: "$K8S_URL",
-                            namespace: 'mauricio']) {
-                                //sh "kubectl apply -f K8s/descriptors -n mauricio"
-                                sh "helm init --tiller-namespace mauricio "
-                                sh "helm upgrade --namespace=mauricio --tiller-namespace mauricio --install robot-shop helm-robot-shop --set ImageTag=latest"
+                            namespace: 'default']) {
+                                //sh "kubectl apply -f K8s/descriptors -n default"
+                                sh "helm init --tiller-namespace default "
+                                sh "helm upgrade --namespace=default --tiller-namespace default --install robot-shop helm-robot-shop --set ImageTag=latest"
                             }
                     }
                 }   
