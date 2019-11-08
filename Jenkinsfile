@@ -83,6 +83,7 @@ pipeline {
                             namespace: 'default']) {
                                 //sh "kubectl apply -f K8s/descriptors -n default"
                                 sh "helm init --tiller-namespace default "
+                                sh "kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system"
                                 sh "helm upgrade --namespace=default --tiller-namespace default --install robot-shop helm-robot-shop --set ImageTag=latest"
                             }
                     }
